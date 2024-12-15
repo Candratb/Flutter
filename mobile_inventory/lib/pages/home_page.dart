@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:mobile_inventory/pages/detail_page.dart';
 import 'package:mobile_inventory/pages/edit_page.dart';
 import '../models/product_model.dart';
-// Import halaman detail produk
 import '../config/db_helper.dart';
 import 'add_page.dart';
 
@@ -15,12 +14,12 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late Future<List<ProductModel>> _products;
-  int _selectedIndex = 0; // Track selected tab
+  int _selectedIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    _products = DbHelper().getProduct(); // Ambil data produk dari database
+    _products = DbHelper().getProduct(); 
   }
 
   void _onItemTapped(int index) {
@@ -31,9 +30,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // Pages based on selected tab
     List<Widget> pages = [
-      // Home Page
+
       FutureBuilder(
         future: _products,
         builder: (context, snapshot) {
@@ -63,7 +61,6 @@ class _HomePageState extends State<HomePage> {
               itemBuilder: (context, index) {
                 return GestureDetector(
                   onTap: () {
-                    // Navigasi ke halaman detail produk
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -137,7 +134,6 @@ class _HomePageState extends State<HomePage> {
                                     setState(() {
                                       _products = DbHelper().getProduct();
                                     });
-
                                     // ignore: use_build_context_synchronously
                                     ScaffoldMessenger.of(context)
                                         .showSnackBar(
@@ -185,7 +181,6 @@ class _HomePageState extends State<HomePage> {
           }
         },
       ),
-      // List of Products in History Page
       FutureBuilder(
         future: _products,
         builder: (context, snapshot) {
@@ -239,7 +234,7 @@ class _HomePageState extends State<HomePage> {
         centerTitle: true,
         backgroundColor: Colors.blue,
       ),
-      body: pages[_selectedIndex], // Menampilkan halaman sesuai tab yang dipilih
+      body: pages[_selectedIndex],
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.blue,
         onPressed: () {
@@ -251,7 +246,7 @@ class _HomePageState extends State<HomePage> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
-        onTap: _onItemTapped, // Handle tab change
+        onTap: _onItemTapped,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),

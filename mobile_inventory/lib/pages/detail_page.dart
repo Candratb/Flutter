@@ -71,7 +71,7 @@ void initState() {
                 MaterialPageRoute(
                   builder: (context) => UpdateProductPage(product: widget.product),
                 ),
-              ).then((_) => setState(() {})); // Refresh data setelah update
+              ).then((_) => setState(() {}));
             },
           ),
           IconButton(
@@ -126,7 +126,7 @@ void initState() {
                     final transactions = snapshot.data!;
                     return ListView.builder(
                       shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(), // Non-scrollable karena dibungkus scroll utama
+                      physics: const NeverScrollableScrollPhysics(), 
                       itemCount: transactions.length,
                       itemBuilder: (context, index) {
                         final transaction = transactions[index];
@@ -140,7 +140,6 @@ void initState() {
                 },
               ),
             const SizedBox(height: 20),
-              // Tombol untuk menambah riwayat transaksi
                ElevatedButton(
         onPressed: () {
           Navigator.pushNamed(

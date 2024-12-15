@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -19,7 +21,7 @@ class EditPage extends StatefulWidget {
 class _EditPageState extends State<EditPage> {
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
-  final _categoryController = TextEditingController(); // TextField untuk kategori
+  final _categoryController = TextEditingController();
   final _priceController = TextEditingController();
   final _stockController = TextEditingController();
   Uint8List? _imageBase64;
@@ -29,7 +31,7 @@ class _EditPageState extends State<EditPage> {
     super.initState();
     _nameController.text = widget.product.name;
     _descriptionController.text = widget.product.description;
-    _categoryController.text = widget.product.category; // Inisialisasi kategori dari produk
+    _categoryController.text = widget.product.category;
     _priceController.text = widget.product.price.toString();
     _stockController.text = widget.product.stock.toString();
 
@@ -183,7 +185,7 @@ class _EditPageState extends State<EditPage> {
                 id: widget.product.id,
                 name: _nameController.text,
                 description: _descriptionController.text,
-                category: _categoryController.text, // Ambil nilai kategori dari TextField
+                category: _categoryController.text, 
                 price: price,
                 stock: stock,
                 image: _imageBase64,
@@ -192,19 +194,15 @@ class _EditPageState extends State<EditPage> {
               final response = await DbHelper().update(product);
 
               if (response > 0) {
-                // ignore: use_build_context_synchronously
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   backgroundColor: Colors.green,
                   content: Text('Product ${product.id} updated successfully'),
                 ));
-
-                // ignore: use_build_context_synchronously
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) => const HomePage()),
                 );
               } else {
-                // ignore: use_build_context_synchronously
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   backgroundColor: Colors.red,
                   content: Text('Failed to update product ${product.id}'),

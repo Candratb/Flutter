@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -21,7 +23,7 @@ class _AddPageState extends State<AddPage> {
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _stockController = TextEditingController();
-  final TextEditingController _categoryController = TextEditingController(); // Controller untuk kategori
+  final TextEditingController _categoryController = TextEditingController(); 
   Uint8List? _imageBase64;
 
   @override
@@ -167,7 +169,6 @@ class _AddPageState extends State<AddPage> {
                   if (value == null || value.isEmpty) {
                     return 'Price is required';
                   }
-                  // Validasi untuk memastikan harga adalah angka integer dan lebih besar dari 0
                   if (int.tryParse(value) == null || int.parse(value) <= 0) {
                     return 'Enter a valid price';
                   }
@@ -196,12 +197,11 @@ class _AddPageState extends State<AddPage> {
               ElevatedButton(
                 onPressed: () async {
                   if (_formkey.currentState?.validate() ?? false) {
-                    // Pada saat memproses data setelah form valid
                     final product = ProductModel(
                       name: _nameController.text,
                       description: _descriptionController.text,
-                      category: _categoryController.text, // Gunakan teks kategori
-                      price: int.parse(_priceController.text), // Mengonversi menjadi integer
+                      category: _categoryController.text,
+                      price: int.parse(_priceController.text), 
                       stock: int.parse(_stockController.text),
                       image: _imageBase64,
                     );

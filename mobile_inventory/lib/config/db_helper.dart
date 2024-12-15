@@ -40,11 +40,9 @@ class DbHelper {
   // Migrasi database jika versi berubah
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
     if (oldVersion < 2) {
-      // Tambahkan kolom kategori jika belum ada
       await db.execute('ALTER TABLE product ADD COLUMN category TEXT');
     }
     if (oldVersion < 3) { 
-      // Pastikan kolom description ada pada versi 3
       await db.execute('ALTER TABLE product ADD COLUMN description TEXT');
     }
   }
@@ -100,27 +98,34 @@ class DbHelper {
   }
 
   // Menambahkan riwayat transaksi
-  Future<int> addTransactionHistory(TransactionHistoryModel transaction) async {
-    final db = await getDB;
-
-    // Menambahkan transaksi ke tabel riwayat
-    return await db.insert('transaction_history', transaction.toMap());
+ Future<int> addTransactionHistory(TransactionHistoryModel transaction) async {
+  final db = await getDB; 
+  try {
+    return await db.insert(
+      'transaction_history', 
+      transaction.toMap(),   
+    );
+  } catch (e) {
+    throw Exception('Gagal menambahkan riwayat transaksi: $e');
   }
+}
+
 
   // Ambil riwayat transaksi berdasarkan id produk
   Future<List<TransactionHistoryModel>> getTransactionHistory(int productId) async {
-    final db = await getDB;
+  final db = await getDB;
 
-    final result = await db.query(
-      'transaction_history',
-      where: 'productId = ?',
-      whereArgs: [productId],
-    );
+  final result = await db.query(
+    'transaction_history',
+    where: 'productId = ?',
+    whereArgs: [productId],
+  );
 
-    return result.isNotEmpty
-        ? result.map((e) => TransactionHistoryModel.fromMap(e)).toList()
-        : [];
-  }
+  return result.isNotEmpty
+      ? result.map((e) => TransactionHistoryModel.fromMap(e)).toList()
+      : [];
+}
+
 
   // Fungsi untuk memperbarui produk
   Future<int> update(ProductModel product) async {
@@ -192,6 +197,15 @@ class DbHelper {
       return ProductModel.fromMap(result.first);
     }
     return null;
+  }
+
+  Future<void> updateStock(int productId, int quantity) async {
+    final db = await getDB;
+
+    await db.rawUpdate(
+      'UPDATE product SET stock = stock + ? WHERE id = ?',
+      [quantity, productId],
+    );
   }
 
 }

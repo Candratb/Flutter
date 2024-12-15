@@ -46,9 +46,9 @@ class _UpdateProductPageState extends State<UpdateProductPage> {
       name: _nameController.text,
       description: _descriptionController.text,
       category: _categoryController.text,
-      price: int.parse(_priceController.text), // Tetap menggunakan int.parse karena price adalah int
+      price: int.parse(_priceController.text),
       stock: int.parse(_stockController.text),
-      image: widget.product.image, // Gambar tetap
+      image: widget.product.image,
     );
 
     try {
@@ -59,7 +59,7 @@ class _UpdateProductPageState extends State<UpdateProductPage> {
           backgroundColor: Colors.green,
         ),
       );
-      Navigator.pop(context); // Kembali ke halaman sebelumnya
+      Navigator.pop(context);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

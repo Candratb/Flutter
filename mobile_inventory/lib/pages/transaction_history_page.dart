@@ -1,20 +1,129 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_inventory/config/db_helper.dart';
 import 'package:mobile_inventory/models/transaction_history_model.dart';
-import 'package:intl/intl.dart'; 
+import 'package:intl/intl.dart';
 
-class TransactionHistoryPage extends StatelessWidget {
+class TransactionHistoryPage extends StatefulWidget {
   final int productId;
 
-  const TransactionHistoryPage({Key? key, required this.productId}) : super(key: key);
+  const TransactionHistoryPage({super.key, required this.productId});
 
-  Future<List<TransactionHistoryModel>> fetchTransactionHistory(int productId) async {
-    final dbHelper = DbHelper();
-    try {
-      return await dbHelper.getTransactionHistory(productId);
-    } catch (e) {
-      throw Exception("Gagal memuat riwayat transaksi: $e");
-    }
+  @override
+  State<TransactionHistoryPage> createState() => _TransactionHistoryPageState();
+}
+
+class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
+  late Future<List<TransactionHistoryModel>> _transactionHistory;
+  final DbHelper _dbHelper = DbHelper();
+
+  @override
+  void initState() {
+    super.initState();
+    _refreshTransactionHistory();
+  }
+
+  void _refreshTransactionHistory() {
+    setState(() {
+      _transactionHistory = _dbHelper.getTransactionHistory(widget.productId);
+    });
+  }
+
+  Future<void> _addTransaction() async {
+    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+    String? type;
+    int? quantity;
+    DateTime? date;
+
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Tambah Transaksi'),
+          content: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                DropdownButtonFormField<String>(
+                  value: type,
+                  items: const [
+                    DropdownMenuItem(value: 'Masuk', child: Text('Masuk')),
+                    DropdownMenuItem(value: 'Keluar', child: Text('Keluar')),
+                  ],
+                  onChanged: (value) {
+                    type = value;
+                  },
+                  decoration: const InputDecoration(labelText: 'Jenis Transaksi'),
+                  validator: (value) => value == null ? 'Pilih jenis transaksi' : null,
+                ),
+                TextFormField(
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(labelText: 'Jumlah'),
+                  onChanged: (value) {
+                    quantity = int.tryParse(value);
+                  },
+                  validator: (value) =>
+                      (value == null || int.tryParse(value) == null || int.parse(value) <= 0)
+                          ? 'Masukkan jumlah yang valid'
+                          : null,
+                ),
+                TextButton(
+                  onPressed: () async {
+                    final selectedDate = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime(2100),
+                    );
+                    if (selectedDate != null) {
+                      setState(() {
+                        date = selectedDate;
+                      });
+                    }
+                  },
+                  child: const Text('Pilih Tanggal'),
+                ),
+                if (date != null) Text(DateFormat('dd MMM yyyy').format(date!)),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Batal'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+            if (_formKey.currentState!.validate() && date != null) {
+              Navigator.pop(context);
+                  // Simpan transaksi baru ke database
+                  final transaction = TransactionHistoryModel(
+                    productId: widget.productId,
+                    type: type!,
+                    quantity: quantity!,
+                    date: DateFormat('yyyy-MM-dd').format(date!), 
+                  );
+
+                  await _dbHelper.addTransactionHistory(transaction);
+
+                  if (type == 'Masuk') {
+                    await _dbHelper.updateStock(widget.productId, quantity!);
+                  } else if (type == 'Keluar') {
+                    await _dbHelper.updateStock(widget.productId, -quantity!);
+                  }
+
+                  _refreshTransactionHistory();
+                }
+              },
+
+              child: const Text('Simpan'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -24,12 +133,10 @@ class TransactionHistoryPage extends StatelessWidget {
         title: const Text('Riwayat Transaksi'),
       ),
       body: FutureBuilder<List<TransactionHistoryModel>>(
-        future: fetchTransactionHistory(productId),
+        future: _transactionHistory,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(
               child: Text(
@@ -53,7 +160,7 @@ class TransactionHistoryPage extends StatelessWidget {
               itemCount: transactions.length,
               itemBuilder: (context, index) {
                 final transaction = transactions[index];
-                final formattedDate = DateFormat('dd MMM yyyy, HH:mm').format(transaction.date as DateTime);
+                final formattedDate = DateFormat('dd MMM yyyy, HH:mm').format(DateTime.parse(transaction.date));
 
                 return Card(
                   margin: const EdgeInsets.symmetric(vertical: 8),
@@ -71,6 +178,10 @@ class TransactionHistoryPage extends StatelessWidget {
             );
           }
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _addTransaction,
+        child: const Icon(Icons.add),
       ),
     );
   }

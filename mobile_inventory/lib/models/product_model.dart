@@ -5,7 +5,7 @@ class ProductModel {
   final int? id;
   final String name;
   final String description;
-  final String category; // Tambahkan kategori
+  final String category; 
   final int price;
   int stock;
   final Uint8List? image;
@@ -14,7 +14,7 @@ class ProductModel {
       {this.id,
       required this.name,
       required this.description,
-      required this.category, // Wajib
+      required this.category, 
       required this.price,
       required this.stock,
       this.image});
@@ -24,7 +24,7 @@ class ProductModel {
       'id': id,
       'name': name,
       'description':description,
-      'category': category, // Tambahkan kategori
+      'category': category, 
       'price': price,
       'stock': stock,
       'image': image,
@@ -34,9 +34,9 @@ class ProductModel {
   factory ProductModel.fromMap(Map<String, dynamic> map) {
   return ProductModel(
     id: map['id'] as int?,
-    name: map['name'] ?? '', // Berikan nilai default jika null
-    description: map['description'] ?? '', // Berikan nilai default jika null
-    category: map['category'] ?? '', // Berikan nilai default jika null
+    name: map['name'] ?? '',
+    description: map['description'] ?? '', 
+    category: map['category'] ?? '', 
     price: map['price'] as int,
     stock: map['stock'] as int,
     image: map['image'] as Uint8List?,

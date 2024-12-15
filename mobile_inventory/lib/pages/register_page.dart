@@ -28,19 +28,15 @@ class _RegisterPageState extends State<RegisterPage> {
     _isLoading = true;
   });
   try {
-    // Membuat akun di Firebase Authentication
     UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
       email: email!,
       password: _password.text,
     );
 
-    // Update profil pengguna di Firebase Authentication
     await userCredential.user!.updateDisplayName(nama);
 
-    // Tambahkan informasi lain ke metadata lokal (jika diperlukan)
     print('User registered: ${userCredential.user!.uid}');
 
-    // Navigasi ke halaman login setelah sukses
     Navigator.pushNamedAndRemoveUntil(
         context, '/login', ModalRoute.withName('/login'));
   } catch (e) {
@@ -153,7 +149,6 @@ class _RegisterPageState extends State<RegisterPage> {
                                 onPressed: () {
                                   if (_formKey.currentState!.validate()) {
                                     register();
-                                    // Tambahkan aksi registrasi Anda di sini.
                                   }
                                 },
                                 child: Text('Register',

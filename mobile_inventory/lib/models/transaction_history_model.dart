@@ -1,29 +1,31 @@
 class TransactionHistoryModel {
+  final int? id;
   final int productId;
-  final String type; // "Masuk" atau "Keluar"
+  final String type;
   final int quantity;
-  final String date; // Tanggal transaksi
+  final String date; 
 
   TransactionHistoryModel({
+    this.id,
     required this.productId,
     required this.type,
     required this.quantity,
     required this.date,
   });
 
-  // Konversi dari Map ke model
   factory TransactionHistoryModel.fromMap(Map<String, dynamic> map) {
     return TransactionHistoryModel(
-      productId: map['productId'],
-      type: map['type'],
-      quantity: map['quantity'],
-      date: map['date'],
+      id: map['id'] as int?,
+      productId: map['productId'] as int,
+      type: map['type'] as String,
+      quantity: map['quantity'] as int,
+      date: map['date'] as String, 
     );
   }
 
-  // Konversi dari model ke Map
   Map<String, dynamic> toMap() {
     return {
+      'id': id,
       'productId': productId,
       'type': type,
       'quantity': quantity,

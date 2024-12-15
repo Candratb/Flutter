@@ -19,17 +19,13 @@ class _SplashPageState extends State<SplashPage> {
 
   void _checkUserLogin() async {
   User? user = _auth.currentUser;
-
-    // Tambahkan delay untuk menampilkan splash screen
     await Future.delayed(const Duration(seconds: 2));
 
-    if (!mounted) return; // Pastikan widget masih aktif sebelum navigasi
+    if (!mounted) return; 
 
     if (user != null) {
-      // Jika user sudah login, arahkan ke home
       Navigator.pushReplacementNamed(context, '/home');
     } else {
-      // Jika user belum login, arahkan ke login
       Navigator.pushReplacementNamed(context, '/login');
     }
   }
@@ -41,7 +37,7 @@ class _SplashPageState extends State<SplashPage> {
       body: Center(
         child: Text(
           'Selamat datang di Aplikasi Laporan',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
       ),
     );
